@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,7 +36,7 @@
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             padding: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .container {
@@ -143,7 +144,7 @@
         .map-section {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -168,7 +169,7 @@
         .report-form {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
         }
 
@@ -224,7 +225,7 @@
             grid-column: 1 / -1;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-top: 2rem;
         }
 
@@ -255,11 +256,25 @@
             flex-shrink: 0;
         }
 
-        .hole { background-color: #8B4513; }
-        .obstacle { background-color: #FF6B35; }
-        .signal { background-color: #4A90E2; }
-        .maintenance { background-color: #F39C12; }
-        .other { background-color: #95A5A6; }
+        .hole {
+            background-color: #8B4513;
+        }
+
+        .obstacle {
+            background-color: #FF6B35;
+        }
+
+        .signal {
+            background-color: #4A90E2;
+        }
+
+        .maintenance {
+            background-color: #F39C12;
+        }
+
+        .other {
+            background-color: #95A5A6;
+        }
 
         .report-details h4 {
             margin-bottom: 5px;
@@ -332,16 +347,16 @@
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
             nav ul {
                 flex-wrap: wrap;
                 justify-content: center;
             }
-            
+
             .hero h2 {
                 font-size: 2rem;
             }
-            
+
             .problem-types {
                 grid-template-columns: 1fr;
             }
@@ -374,6 +389,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <header>
@@ -400,7 +416,8 @@
     <section class="hero">
         <div class="container">
             <h2>Melhorando as vias para bicicletas, juntos</h2>
-            <p>Reporte problemas, visualize condições em tempo real e ajude a construir uma cidade mais segura para ciclistas.</p>
+            <p>Reporte problemas, visualize condições em tempo real e ajude a construir uma cidade mais segura para
+                ciclistas.</p>
             <a href="#reportar" class="btn">Reportar um Problema</a>
         </div>
     </section>
@@ -433,7 +450,7 @@
                 <div class="section-header">
                     <h3>Reportar Problema</h3>
                 </div>
-                <form id="problemForm">
+                <form id="problemForm" action="https://formspree.io/f/mblpjylv" method="POST" >
                     <div class="form-group">
                         <label for="problemType">Tipo de Problema *</label>
                         <div class="problem-types">
@@ -464,20 +481,43 @@
 
                     <div class="form-group">
                         <label for="problemDescription">Descrição *</label>
-                        <textarea id="problemDescription" class="form-control" rows="3" placeholder="Descreva o problema encontrado..." required></textarea>
+                        <textarea id="problemDescription" class="form-control" rows="3"
+                            placeholder="Descreva o problema encontrado..." required></textarea>
                         <div class="form-hint">Forneça detalhes sobre o problema</div>
                     </div>
 
                     <div class="form-group">
                         <label for="problemLocation">Localização *</label>
-                        <input type="text" id="problemLocation" class="form-control" placeholder="Clique no mapa para selecionar a localização" readonly required>
+                        <input type="text" id="problemLocation" class="form-control"
+                            placeholder="Clique no mapa para selecionar a localização" readonly required>
                         <input type="hidden" id="problemLat" name="problemLat">
                         <input type="hidden" id="problemLng" name="problemLng">
                         <div class="form-hint">Clique no mapa à esquerda para definir a localização</div>
                     </div>
 
                     <button type="submit" class="btn" style="width: 100%;" id="submitBtn">Enviar Report</button>
+
+
+                    <!-- modify this form HTML and place wherever you want your form -->
+                    <!-- <form action="https://formspree.io/f/mblpjylv" method="POST">
+                        <label>
+                            Your email:
+                            <input type="email" name="email">
+                        </label>
+                        <label>
+                            Your message:
+                            <textarea name="message"></textarea>
+                        </label> -->
+                        <!-- your other form fields go here -->
+                        <!-- <button type="submit">Send</button>
+                    </form> -->
+
                 </form>
+
+
+
+
+
             </section>
 
             <!-- Reports List -->
@@ -499,7 +539,8 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Sobre o Via-Bike</h3>
-                    <p>Plataforma colaborativa para ciclistas urbanos reportarem condições das vias para bicicletas e melhorarem juntos a mobilidade da cidade.</p>
+                    <p>Plataforma colaborativa para ciclistas urbanos reportarem condições das vias para bicicletas e
+                        melhorarem juntos a mobilidade da cidade.</p>
                 </div>
                 <div class="footer-section">
                     <h3>Links Rápidos</h3>
@@ -529,15 +570,15 @@
     <script>
         // Inicialização do mapa
         let map = L.map('map').setView([-27.5954, -48.5480], 13);
-        
+
         // Adicionar camada do OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
-        
+
         // Array para armazenar os reports
         let reports = [];
-        
+
         // Carregar reports do localStorage
         function loadReportsFromStorage() {
             try {
@@ -551,7 +592,7 @@
                 reports = [];
             }
         }
-        
+
         // Salvar reports no localStorage
         function saveReportsToStorage() {
             try {
@@ -562,73 +603,73 @@
                 return false;
             }
         }
-        
+
         // Adicionar alguns reports de exemplo apenas se não houver reports salvos
         function addExampleReports() {
             if (reports.length === 0) {
                 const exampleReports = [
-                    { 
+                    {
                         id: Date.now() + 1,
-                        lat: -27.5954, 
-                        lng: -48.5480, 
-                        type: 'hole', 
+                        lat: -27.5954,
+                        lng: -48.5480,
+                        type: 'hole',
                         description: 'Buraco profundo na via da Beira-Mar, próximo ao shopping',
                         timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
                         confirmations: 3
                     },
-                    { 
+                    {
                         id: Date.now() + 2,
-                        lat: -27.5900, 
-                        lng: -48.5500, 
-                        type: 'obstacle', 
+                        lat: -27.5900,
+                        lng: -48.5500,
+                        type: 'obstacle',
                         description: 'Obstáculo bloqueando a via - galho de árvore caído',
                         timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
                         confirmations: 1
                     },
-                    { 
+                    {
                         id: Date.now() + 3,
-                        lat: -27.6000, 
-                        lng: -48.5450, 
-                        type: 'signal', 
+                        lat: -27.6000,
+                        lng: -48.5450,
+                        type: 'signal',
                         description: 'Falta de sinalização na curva perigosa',
                         timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
                         confirmations: 5
                     }
                 ];
-                
+
                 reports.push(...exampleReports);
                 saveReportsToStorage();
                 updateReportsDisplay();
             }
         }
-        
+
         // Função para adicionar marcador ao mapa
         function addMarkerToMap(report) {
             let iconColor;
             let iconText;
-            
-            switch(report.type) {
-                case 'hole': 
+
+            switch (report.type) {
+                case 'hole':
                     iconColor = '#8B4513';
                     iconText = '🕳️';
                     break;
-                case 'obstacle': 
+                case 'obstacle':
                     iconColor = '#FF6B35';
                     iconText = '🚧';
                     break;
-                case 'signal': 
+                case 'signal':
                     iconColor = '#4A90E2';
                     iconText = '🚸';
                     break;
-                case 'maintenance': 
+                case 'maintenance':
                     iconColor = '#F39C12';
                     iconText = '🔧';
                     break;
-                default: 
+                default:
                     iconColor = '#95A5A6';
                     iconText = '❓';
             }
-            
+
             // Criar ícone personalizado
             const customIcon = L.divIcon({
                 html: `<div style="background-color: ${iconColor}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">${iconText}</div>`,
@@ -636,7 +677,7 @@
                 iconSize: [30, 30],
                 iconAnchor: [15, 15]
             });
-            
+
             let marker = L.marker([report.lat, report.lng], { icon: customIcon })
                 .addTo(map)
                 .bindPopup(`
@@ -649,21 +690,21 @@
                         <button class="confirm-btn" data-id="${report.id}" style="background: #2E8B57; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px;">Confirmar Problema</button>
                     </div>
                 `);
-            
+
             // Adicionar evento de clique para o botão de confirmação
-            marker.on('popupopen', function() {
+            marker.on('popupopen', function () {
                 const confirmBtn = document.querySelector(`.confirm-btn[data-id="${report.id}"]`);
                 if (confirmBtn) {
-                    confirmBtn.addEventListener('click', function() {
+                    confirmBtn.addEventListener('click', function () {
                         confirmReport(report.id);
                         marker.closePopup();
                     });
                 }
             });
-            
+
             report.marker = marker;
         }
-        
+
         // Função para confirmar um report
         function confirmReport(reportId) {
             const report = reports.find(r => r.id === reportId);
@@ -677,10 +718,10 @@
                 }
             }
         }
-        
+
         // Função para obter o nome do tipo de problema
         function getTypeName(type) {
-            switch(type) {
+            switch (type) {
                 case 'hole': return 'Buraco';
                 case 'obstacle': return 'Obstáculo';
                 case 'signal': return 'Falta de Sinalização';
@@ -688,7 +729,7 @@
                 default: return 'Outro Problema';
             }
         }
-        
+
         // Função para formatar o tempo (ex: "há 2 horas")
         function formatTimeAgo(timestamp) {
             const now = new Date();
@@ -697,7 +738,7 @@
             const diffMins = Math.floor(diffMs / (1000 * 60));
             const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
             const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-            
+
             if (diffMins < 60) {
                 return `há ${diffMins} minuto${diffMins !== 1 ? 's' : ''}`;
             } else if (diffHours < 24) {
@@ -706,24 +747,24 @@
                 return `há ${diffDays} dia${diffDays !== 1 ? 's' : ''}`;
             }
         }
-        
+
         // Função para atualizar a contagem de reports
         function updateReportsCount() {
             document.getElementById('reportsCount').textContent = `${reports.length} problema${reports.length !== 1 ? 's' : ''}`;
         }
-        
+
         // Função para atualizar a lista de reports
         function updateReportsDisplay() {
             const reportsList = document.getElementById('reportsList');
             reportsList.innerHTML = '';
-            
+
             // Ordenar reports por data (mais recentes primeiro)
             const sortedReports = [...reports].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
+
             sortedReports.forEach(report => {
                 const reportItem = document.createElement('div');
                 reportItem.className = 'report-item';
-                
+
                 reportItem.innerHTML = `
                     <div class="report-icon ${report.type}">${getIconForType(report.type)}</div>
                     <div class="report-details">
@@ -735,19 +776,19 @@
                         </div>
                     </div>
                 `;
-                
+
                 reportsList.appendChild(reportItem);
             });
-            
+
             updateReportsCount();
-            
+
             // Atualizar marcadores no mapa
             updateMapMarkers();
         }
-        
+
         // Função para obter ícone para o tipo de problema
         function getIconForType(type) {
-            switch(type) {
+            switch (type) {
                 case 'hole': return '🕳️';
                 case 'obstacle': return '🚧';
                 case 'signal': return '🚸';
@@ -755,7 +796,7 @@
                 default: return '❓';
             }
         }
-        
+
         // Função para atualizar marcadores no mapa
         function updateMapMarkers() {
             // Remover todos os marcadores existentes
@@ -764,7 +805,7 @@
                     map.removeLayer(layer);
                 }
             });
-            
+
             // Adicionar marcadores para todos os reports
             reports.forEach(report => {
                 addMarkerToMap(report);
@@ -775,10 +816,10 @@
         function showSuccessMessage() {
             const successMessage = document.getElementById('successMessage');
             const errorMessage = document.getElementById('errorMessage');
-            
+
             errorMessage.style.display = 'none';
             successMessage.style.display = 'block';
-            
+
             setTimeout(() => {
                 successMessage.style.display = 'none';
             }, 5000);
@@ -788,61 +829,61 @@
         function showErrorMessage() {
             const successMessage = document.getElementById('successMessage');
             const errorMessage = document.getElementById('errorMessage');
-            
+
             successMessage.style.display = 'none';
             errorMessage.style.display = 'block';
-            
+
             setTimeout(() => {
                 errorMessage.style.display = 'none';
             }, 5000);
         }
-        
+
         // Seleção de tipo de problema
         document.querySelectorAll('.problem-type').forEach(type => {
-            type.addEventListener('click', function() {
+            type.addEventListener('click', function () {
                 document.querySelectorAll('.problem-type').forEach(t => t.classList.remove('selected'));
                 this.classList.add('selected');
                 document.getElementById('problemType').value = this.getAttribute('data-type');
             });
         });
-        
+
         // Clique no mapa para selecionar localização
-        map.on('click', function(e) {
+        map.on('click', function (e) {
             document.getElementById('problemLocation').value = `Lat: ${e.latlng.lat.toFixed(4)}, Lng: ${e.latlng.lng.toFixed(4)}`;
             document.getElementById('problemLat').value = e.latlng.lat;
             document.getElementById('problemLng').value = e.latlng.lng;
         });
-        
+
         // Envio do formulário de report
-        document.getElementById('problemForm').addEventListener('submit', function(e) {
+        document.getElementById('problemForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             const type = document.getElementById('problemType').value;
             const description = document.getElementById('problemDescription').value.trim();
             const lat = document.getElementById('problemLat').value;
             const lng = document.getElementById('problemLng').value;
-            
+
             // Validação dos campos
             if (!type) {
                 alert('Por favor, selecione o tipo de problema.');
                 return;
             }
-            
+
             if (!description) {
                 alert('Por favor, descreva o problema encontrado.');
                 return;
             }
-            
+
             if (!lat || !lng) {
                 alert('Por favor, selecione uma localização no mapa.');
                 return;
             }
-            
+
             // Desabilitar botão para evitar múltiplos envios
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.textContent = 'Enviando...';
-            
+
             try {
                 const newReport = {
                     id: Date.now(),
@@ -853,17 +894,17 @@
                     timestamp: new Date().toISOString(),
                     confirmations: 0
                 };
-                
+
                 reports.push(newReport);
-                
+
                 if (saveReportsToStorage()) {
                     updateReportsDisplay();
-                    
+
                     // Limpar formulário
                     this.reset();
                     document.querySelectorAll('.problem-type').forEach(t => t.classList.remove('selected'));
                     document.getElementById('problemLocation').value = '';
-                    
+
                     showSuccessMessage();
                 } else {
                     throw new Error('Erro ao salvar no localStorage');
@@ -877,29 +918,30 @@
                 submitBtn.textContent = 'Enviar Report';
             }
         });
-        
+
         // Botão de localização
-        document.getElementById('locateBtn').addEventListener('click', function() {
+        document.getElementById('locateBtn').addEventListener('click', function () {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
+                navigator.geolocation.getCurrentPosition(function (position) {
                     map.setView([position.coords.latitude, position.coords.longitude], 15);
-                }, function() {
+                }, function () {
                     alert('Não foi possível obter sua localização.');
                 });
             } else {
                 alert('Geolocalização não é suportada pelo seu navegador.');
             }
         });
-        
+
         // Botão de ajuda
-        document.getElementById('helpBtn').addEventListener('click', function() {
+        document.getElementById('helpBtn').addEventListener('click', function () {
             alert('Como usar o Via-Bike:\n\n1. Clique no mapa para selecionar a localização do problema\n2. Escolha o tipo de problema\n3. Descreva o problema encontrado\n4. Clique em "Enviar Report"\n\nSua contribuição ajuda a melhorar as vias para bicicletas para todos!');
         });
-        
+
         // Inicialização
         loadReportsFromStorage();
         addExampleReports();
         updateReportsDisplay();
     </script>
 </body>
+
 </html>
