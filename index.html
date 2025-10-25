@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CicloVias - Plataforma Colaborativa para Ciclistas</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        /* Reset e configurações básicas */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2E8B57;
+            --primary-dark: #1f6e45;
+            --secondary: #FF6B35;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #e55a2b;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(46, 139, 87, 0.8), rgba(46, 139, 87, 0.9)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%232E8B57"/><path d="M0 50 L100 50 M50 0 L50 100" stroke="%231f6e45" stroke-width="1"/></svg>');
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            padding: 3rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Map Section */
+        .map-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .map-container {
+            height: 400px;
+            width: 100%;
+        }
+
+        .section-header {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h3 {
+            color: var(--primary);
+        }
+
+        /* Report Form */
+        .report-form {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .problem-types {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .problem-type {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .problem-type.selected {
+            border-color: var(--primary);
+            background-color: rgba(46, 139, 87, 0.1);
+        }
+
+        .problem-type i {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        /* Reports List */
+        .reports-section {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .reports-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .report-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            gap: 15px;
+        }
+
+        .report-item:last-child {
+            border-bottom: none;
+        }
+
+        .report-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .hole { background-color: #8B4513; }
+        .obstacle { background-color: #FF6B35; }
+        .signal { background-color: #4A90E2; }
+        .maintenance { background-color: #F39C12; }
+        .other { background-color: #95A5A6; }
+
+        .report-details h4 {
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .report-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #444;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .problem-types {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">🚴‍♂️</div>
+                    <h1>CicloVias</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#mapa">Mapa</a></li>
+                        <li><a href="#reportar">Reportar</a></li>
+                        <li><a href="#problemas">Problemas</a></li>
+                        <li><a href="#sobre">Sobre</a></li>
+                    </ul>
+                </nav>
+                <button class="btn" id="helpBtn">Como Usar</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h2>Melhorando as ciclovias, juntos</h2>
+            <p>Reporte problemas, visualize condições em tempo real e ajude a construir uma cidade mais segura para ciclistas.</p>
+            <a href="#reportar" class="btn">Reportar um Problema</a>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div id="successMessage" class="success-message">
+            Problema reportado com sucesso! Obrigado por contribuir.
+        </div>
+
+        <div class="main-content">
+            <!-- Map Section -->
+            <section class="map-section" id="mapa">
+                <div class="section-header">
+                    <h3>Mapa das Ciclovias</h3>
+                    <button class="btn" id="locateBtn">Minha Localização</button>
+                </div>
+                <div id="map" class="map-container"></div>
+            </section>
+
+            <!-- Report Form -->
+            <section class="report-form" id="reportar">
+                <div class="section-header">
+                    <h3>Reportar Problema</h3>
+                </div>
+                <form id="problemForm">
+                    <div class="form-group">
+                        <label for="problemType">Tipo de Problema</label>
+                        <div class="problem-types">
+                            <div class="problem-type" data-type="hole">
+                                <i>🕳️</i>
+                                <span>Buraco</span>
+                            </div>
+                            <div class="problem-type" data-type="obstacle">
+                                <i>🚧</i>
+                                <span>Obstáculo</span>
+                            </div>
+                            <div class="problem-type" data-type="signal">
+                                <i>🚸</i>
+                                <span>Falta de Sinalização</span>
+                            </div>
+                            <div class="problem-type" data-type="maintenance">
+                                <i>🔧</i>
+                                <span>Falta de Manutenção</span>
+                            </div>
+                            <div class="problem-type" data-type="other">
+                                <i>❓</i>
+                                <span>Outro</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="problemType" name="problemType" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="problemDescription">Descrição</label>
+                        <textarea id="problemDescription" class="form-control" rows="3" placeholder="Descreva o problema encontrado..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="problemLocation">Localização</label>
+                        <input type="text" id="problemLocation" class="form-control" placeholder="Clique no mapa para selecionar a localização" readonly required>
+                        <input type="hidden" id="problemLat" name="problemLat">
+                        <input type="hidden" id="problemLng" name="problemLng">
+                    </div>
+
+                    <button type="submit" class="btn" style="width: 100%;">Enviar Report</button>
+                </form>
+            </section>
+
+            <!-- Reports List -->
+            <section class="reports-section" id="problemas">
+                <div class="section-header">
+                    <h3>Problemas Reportados Recentemente</h3>
+                    <span id="reportsCount">0 problemas</span>
+                </div>
+                <div class="reports-list" id="reportsList">
+                    <!-- Os reports serão carregados aqui via JavaScript -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="sobre">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Sobre o CicloVias</h3>
+                    <p>Plataforma colaborativa para ciclistas urbanos reportarem condições das ciclovias e melhorarem juntos a mobilidade da cidade.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="#mapa">Mapa</a></li>
+                        <li><a href="#reportar">Reportar Problema</a></li>
+                        <li><a href="#problemas">Problemas Reportados</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contato</h3>
+                    <ul>
+                        <li>Email: contato@ciclovias.app</li>
+                        <li>UNIVALI - ADS</li>
+                        <li>Projeto Acadêmico</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 CicloVias - Todos os direitos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Inicialização do mapa
+        let map = L.map('map').setView([-27.5954, -48.5480], 13); // Coordenadas de exemplo (Florianópolis)
+        
+        // Adicionar camada do OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Array para armazenar os reports
+        let reports = [];
+        
+        // Carregar reports do localStorage
+        function loadReportsFromStorage() {
+            const savedReports = localStorage.getItem('ciclovias_reports');
+            if (savedReports) {
+                reports = JSON.parse(savedReports);
+                updateReportsDisplay();
+            }
+        }
+        
+        // Salvar reports no localStorage
+        function saveReportsToStorage() {
+            localStorage.setItem('ciclovias_reports', JSON.stringify(reports));
+        }
+        
+        // Adicionar alguns reports de exemplo apenas se não houver reports salvos
+        function addExampleReports() {
+            if (reports.length === 0) {
+                const exampleReports = [
+                    { 
+                        id: Date.now() + 1,
+                        lat: -27.5954, 
+                        lng: -48.5480, 
+                        type: 'hole', 
+                        description: 'Buraco profundo na ciclovia da Beira-Mar, próximo ao shopping',
+                        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 horas atrás
+                        confirmations: 3
+                    },
+                    { 
+                        id: Date.now() + 2,
+                        lat: -27.5900, 
+                        lng: -48.5500, 
+                        type: 'obstacle', 
+                        description: 'Obstáculo bloqueando a ciclovia - galho de árvore caído',
+                        timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 horas atrás
+                        confirmations: 1
+                    },
+                    { 
+                        id: Date.now() + 3,
+                        lat: -27.6000, 
+                        lng: -48.5450, 
+                        type: 'signal', 
+                        description: 'Falta de sinalização na curva perigosa',
+                        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 dia atrás
+                        confirmations: 5
+                    }
+                ];
+                
+                reports.push(...exampleReports);
+                saveReportsToStorage();
+                updateReportsDisplay();
+            }
+        }
+        
+        // Função para adicionar marcador ao mapa
+        function addMarkerToMap(report) {
+            let iconColor;
+            let iconText;
+            
+            switch(report.type) {
+                case 'hole': 
+                    iconColor = '#8B4513';
+                    iconText = '🕳️';
+                    break;
+                case 'obstacle': 
+                    iconColor = '#FF6B35';
+                    iconText = '🚧';
+                    break;
+                case 'signal': 
+                    iconColor = '#4A90E2';
+                    iconText = '🚸';
+                    break;
+                case 'maintenance': 
+                    iconColor = '#F39C12';
+                    iconText = '🔧';
+                    break;
+                default: 
+                    iconColor = '#95A5A6';
+                    iconText = '❓';
+            }
+            
+            // Criar ícone personalizado
+            const customIcon = L.divIcon({
+                html: `<div style="background-color: ${iconColor}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">${iconText}</div>`,
+                className: 'custom-marker',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            });
+            
+            let marker = L.marker([report.lat, report.lng], { icon: customIcon })
+                .addTo(map)
+                .bindPopup(`
+                    <div style="min-width: 200px;">
+                        <h4 style="margin: 0 0 8px 0; color: ${iconColor};">${getTypeName(report.type)}</h4>
+                        <p style="margin: 0 0 10px 0;">${report.description}</p>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 10px;">
+                            ${formatTimeAgo(report.timestamp)} • ${report.confirmations} confirmações
+                        </div>
+                        <button class="btn confirm-btn" data-id="${report.id}" style="padding: 5px 10px; font-size: 12px;">Confirmar Problema</button>
+                    </div>
+                `);
+            
+            // Adicionar evento de clique para o botão de confirmação
+            marker.on('popupopen', function() {
+                const confirmBtn = document.querySelector(`.confirm-btn[data-id="${report.id}"]`);
+                if (confirmBtn) {
+                    confirmBtn.addEventListener('click', function() {
+                        confirmReport(report.id);
+                        marker.closePopup();
+                    });
+                }
+            });
+            
+            report.marker = marker;
+        }
+        
+        // Função para confirmar um report
+        function confirmReport(reportId) {
+            const report = reports.find(r => r.id === reportId);
+            if (report) {
+                report.confirmations += 1;
+                saveReportsToStorage();
+                updateReportsDisplay();
+                alert('Problema confirmado! Obrigado por ajudar a validar esta informação.');
+            }
+        }
+        
+        // Função para obter o nome do tipo de problema
+        function getTypeName(type) {
+            switch(type) {
+                case 'hole': return 'Buraco';
+                case 'obstacle': return 'Obstáculo';
+                case 'signal': return 'Falta de Sinalização';
+                case 'maintenance': return 'Falta de Manutenção';
+                default: return 'Outro Problema';
+            }
+        }
+        
+        // Função para formatar o tempo (ex: "há 2 horas")
+        function formatTimeAgo(timestamp) {
+            const now = new Date();
+            const reportDate = new Date(timestamp);
+            const diffMs = now - reportDate;
+            const diffMins = Math.floor(diffMs / (1000 * 60));
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            
+            if (diffMins < 60) {
+                return `há ${diffMins} minuto${diffMins !== 1 ? 's' : ''}`;
+            } else if (diffHours < 24) {
+                return `há ${diffHours} hora${diffHours !== 1 ? 's' : ''}`;
+            } else {
+                return `há ${diffDays} dia${diffDays !== 1 ? 's' : ''}`;
+            }
+        }
+        
+        // Função para atualizar a contagem de reports
+        function updateReportsCount() {
+            document.getElementById('reportsCount').textContent = `${reports.length} problema${reports.length !== 1 ? 's' : ''}`;
+        }
+        
+        // Função para atualizar a lista de reports
+        function updateReportsDisplay() {
+            const reportsList = document.getElementById('reportsList');
+            reportsList.innerHTML = '';
+            
+            // Ordenar reports por data (mais recentes primeiro)
+            const sortedReports = [...reports].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            sortedReports.forEach(report => {
+                const reportItem = document.createElement('div');
+                reportItem.className = 'report-item';
+                
+                reportItem.innerHTML = `
+                    <div class="report-icon ${report.type}">${getIconForType(report.type)}</div>
+                    <div class="report-details">
+                        <h4>${getTypeName(report.type)}</h4>
+                        <p>${report.description}</p>
+                        <div class="report-meta">
+                            <span>${formatTimeAgo(report.timestamp)}</span>
+                            <span>${report.confirmations} confirmação${report.confirmations !== 1 ? 'es' : ''}</span>
+                        </div>
+                    </div>
+                `;
+                
+                reportsList.appendChild(reportItem);
+            });
+            
+            updateReportsCount();
+            
+            // Atualizar marcadores no mapa
+            updateMapMarkers();
+        }
+        
+        // Função para obter ícone para o tipo de problema
+        function getIconForType(type) {
+            switch(type) {
+                case 'hole': return '🕳️';
+                case 'obstacle': return '🚧';
+                case 'signal': return '🚸';
+                case 'maintenance': return '🔧';
+                default: return '❓';
+            }
+        }
+        
+        // Função para atualizar marcadores no mapa
+        function updateMapMarkers() {
+            // Remover todos os marcadores existentes
+            map.eachLayer(layer => {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
+            
+            // Adicionar marcadores para todos os reports
+            reports.forEach(report => {
+                addMarkerToMap(report);
+            });
+        }
+        
+        // Seleção de tipo de problema
+        document.querySelectorAll('.problem-type').forEach(type => {
+            type.addEventListener('click', function() {
+                document.querySelectorAll('.problem-type').forEach(t => t.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('problemType').value = this.getAttribute('data-type');
+            });
+        });
+        
+        // Clique no mapa para selecionar localização
+        map.on('click', function(e) {
+            document.getElementById('problemLocation').value = `Lat: ${e.latlng.lat.toFixed(4)}, Lng: ${e.latlng.lng.toFixed(4)}`;
+            document.getElementById('problemLat').value = e.latlng.lat;
+            document.getElementById('problemLng').value = e.latlng.lng;
+        });
+        
+        // Envio do formulário de report
+        document.getElementById('problemForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const type = document.getElementById('problemType').value;
+            const description = document.getElementById('problemDescription').value;
+            const lat = document.getElementById('problemLat').value;
+            const lng = document.getElementById('problemLng').value;
+            
+            if (!type || !description || !lat || !lng) {
+                alert('Por favor, preencha todos os campos e selecione uma localização no mapa.');
+                return;
+            }
+            
+            const newReport = {
+                id: Date.now(),
+                lat: parseFloat(lat),
+                lng: parseFloat(lng),
+                type: type,
+                description: description,
+                timestamp: new Date().toISOString(),
+                confirmations: 0
+            };
+            
+            reports.push(newReport);
+            saveReportsToStorage();
+            updateReportsDisplay();
+            
+            // Limpar formulário
+            this.reset();
+            document.querySelectorAll('.problem-type').forEach(t => t.classList.remove('selected'));
+            document.getElementById('problemLocation').value = '';
+            
+            // Mostrar mensagem de sucesso
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
+        });
+        
+        // Botão de localização
+        document.getElementById('locateBtn').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    map.setView([position.coords.latitude, position.coords.longitude], 15);
+                }, function() {
+                    alert('Não foi possível obter sua localização.');
+                });
+            } else {
+                alert('Geolocalização não é suportada pelo seu navegador.');
+            }
+        });
+        
+        // Botão de ajuda
+        document.getElementById('helpBtn').addEventListener('click', function() {
+            alert('Como usar o CicloVias:\n\n1. Clique no mapa para selecionar a localização do problema\n2. Escolha o tipo de problema\n3. Descreva o problema encontrado\n4. Clique em "Enviar Report"\n\nSua contribuição ajuda a melhorar as ciclovias para todos!');
+        });
+        
+        // Inicialização
+        loadReportsFromStorage();
+        addExampleReports();
+        updateReportsDisplay();
+    </script>
+</body>
+</html>
