@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CicloVias - Plataforma Colaborativa para Ciclistas</title>
+    <title>Via-Bike - Plataforma Colaborativa para Ciclistas</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
+        /* (MANTENHA TODOS OS ESTILOS CSS ANTERIORES - ELES ESTÃO CORRETOS) */
         /* Reset e configurações básicas */
         * {
             margin: 0;
@@ -98,6 +99,11 @@
 
         .btn:hover {
             background-color: #e55a2b;
+        }
+
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
         }
 
         /* Hero Section */
@@ -350,6 +356,22 @@
             text-align: center;
             display: none;
         }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+            display: none;
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -359,7 +381,7 @@
             <div class="header-content">
                 <div class="logo">
                     <div class="logo-icon">🚴‍♂️</div>
-                    <h1>CicloVias</h1>
+                    <h1>Via-Bike</h1>
                 </div>
                 <nav>
                     <ul>
@@ -377,7 +399,7 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h2>Melhorando as ciclovias, juntos</h2>
+            <h2>Melhorando as vias para bicicletas, juntos</h2>
             <p>Reporte problemas, visualize condições em tempo real e ajude a construir uma cidade mais segura para ciclistas.</p>
             <a href="#reportar" class="btn">Reportar um Problema</a>
         </div>
@@ -389,14 +411,21 @@
             Problema reportado com sucesso! Obrigado por contribuir.
         </div>
 
+        <div id="errorMessage" class="error-message">
+            Erro ao enviar o report. Por favor, tente novamente.
+        </div>
+
         <div class="main-content">
             <!-- Map Section -->
             <section class="map-section" id="mapa">
                 <div class="section-header">
-                    <h3>Mapa das Ciclovias</h3>
+                    <h3>Mapa das Vias para Bicicletas</h3>
                     <button class="btn" id="locateBtn">Minha Localização</button>
                 </div>
                 <div id="map" class="map-container"></div>
+                <div class="form-hint" style="padding: 10px;">
+                    💡 Dica: Clique no mapa para selecionar a localização do problema
+                </div>
             </section>
 
             <!-- Report Form -->
@@ -406,7 +435,7 @@
                 </div>
                 <form id="problemForm">
                     <div class="form-group">
-                        <label for="problemType">Tipo de Problema</label>
+                        <label for="problemType">Tipo de Problema *</label>
                         <div class="problem-types">
                             <div class="problem-type" data-type="hole">
                                 <i>🕳️</i>
@@ -430,21 +459,24 @@
                             </div>
                         </div>
                         <input type="hidden" id="problemType" name="problemType" required>
+                        <div class="form-hint">Selecione o tipo de problema</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="problemDescription">Descrição</label>
+                        <label for="problemDescription">Descrição *</label>
                         <textarea id="problemDescription" class="form-control" rows="3" placeholder="Descreva o problema encontrado..." required></textarea>
+                        <div class="form-hint">Forneça detalhes sobre o problema</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="problemLocation">Localização</label>
+                        <label for="problemLocation">Localização *</label>
                         <input type="text" id="problemLocation" class="form-control" placeholder="Clique no mapa para selecionar a localização" readonly required>
                         <input type="hidden" id="problemLat" name="problemLat">
                         <input type="hidden" id="problemLng" name="problemLng">
+                        <div class="form-hint">Clique no mapa à esquerda para definir a localização</div>
                     </div>
 
-                    <button type="submit" class="btn" style="width: 100%;">Enviar Report</button>
+                    <button type="submit" class="btn" style="width: 100%;" id="submitBtn">Enviar Report</button>
                 </form>
             </section>
 
@@ -466,8 +498,8 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>Sobre o CicloVias</h3>
-                    <p>Plataforma colaborativa para ciclistas urbanos reportarem condições das ciclovias e melhorarem juntos a mobilidade da cidade.</p>
+                    <h3>Sobre o Via-Bike</h3>
+                    <p>Plataforma colaborativa para ciclistas urbanos reportarem condições das vias para bicicletas e melhorarem juntos a mobilidade da cidade.</p>
                 </div>
                 <div class="footer-section">
                     <h3>Links Rápidos</h3>
@@ -480,14 +512,14 @@
                 <div class="footer-section">
                     <h3>Contato</h3>
                     <ul>
-                        <li>Email: contato@ciclovias.app</li>
+                        <li>Email: contato@via-bike.app</li>
                         <li>UNIVALI - ADS</li>
                         <li>Projeto Acadêmico</li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                &copy; 2025 CicloVias - Todos os direitos reservados.
+                &copy; 2025 Via-Bike - Todos os direitos reservados.
             </div>
         </div>
     </footer>
@@ -496,7 +528,7 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
         // Inicialização do mapa
-        let map = L.map('map').setView([-27.5954, -48.5480], 13); // Coordenadas de exemplo (Florianópolis)
+        let map = L.map('map').setView([-27.5954, -48.5480], 13);
         
         // Adicionar camada do OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -508,16 +540,27 @@
         
         // Carregar reports do localStorage
         function loadReportsFromStorage() {
-            const savedReports = localStorage.getItem('ciclovias_reports');
-            if (savedReports) {
-                reports = JSON.parse(savedReports);
-                updateReportsDisplay();
+            try {
+                const savedReports = localStorage.getItem('via_bike_reports');
+                if (savedReports) {
+                    reports = JSON.parse(savedReports);
+                    updateReportsDisplay();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar reports:', error);
+                reports = [];
             }
         }
         
         // Salvar reports no localStorage
         function saveReportsToStorage() {
-            localStorage.setItem('ciclovias_reports', JSON.stringify(reports));
+            try {
+                localStorage.setItem('via_bike_reports', JSON.stringify(reports));
+                return true;
+            } catch (error) {
+                console.error('Erro ao salvar reports:', error);
+                return false;
+            }
         }
         
         // Adicionar alguns reports de exemplo apenas se não houver reports salvos
@@ -529,8 +572,8 @@
                         lat: -27.5954, 
                         lng: -48.5480, 
                         type: 'hole', 
-                        description: 'Buraco profundo na ciclovia da Beira-Mar, próximo ao shopping',
-                        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 horas atrás
+                        description: 'Buraco profundo na via da Beira-Mar, próximo ao shopping',
+                        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
                         confirmations: 3
                     },
                     { 
@@ -538,8 +581,8 @@
                         lat: -27.5900, 
                         lng: -48.5500, 
                         type: 'obstacle', 
-                        description: 'Obstáculo bloqueando a ciclovia - galho de árvore caído',
-                        timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 horas atrás
+                        description: 'Obstáculo bloqueando a via - galho de árvore caído',
+                        timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
                         confirmations: 1
                     },
                     { 
@@ -548,7 +591,7 @@
                         lng: -48.5450, 
                         type: 'signal', 
                         description: 'Falta de sinalização na curva perigosa',
-                        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 dia atrás
+                        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
                         confirmations: 5
                     }
                 ];
@@ -603,7 +646,7 @@
                         <div style="font-size: 12px; color: #666; margin-bottom: 10px;">
                             ${formatTimeAgo(report.timestamp)} • ${report.confirmations} confirmações
                         </div>
-                        <button class="btn confirm-btn" data-id="${report.id}" style="padding: 5px 10px; font-size: 12px;">Confirmar Problema</button>
+                        <button class="confirm-btn" data-id="${report.id}" style="background: #2E8B57; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px;">Confirmar Problema</button>
                     </div>
                 `);
             
@@ -626,9 +669,12 @@
             const report = reports.find(r => r.id === reportId);
             if (report) {
                 report.confirmations += 1;
-                saveReportsToStorage();
-                updateReportsDisplay();
-                alert('Problema confirmado! Obrigado por ajudar a validar esta informação.');
+                if (saveReportsToStorage()) {
+                    updateReportsDisplay();
+                    alert('Problema confirmado! Obrigado por ajudar a validar esta informação.');
+                } else {
+                    alert('Erro ao confirmar o problema. Tente novamente.');
+                }
             }
         }
         
@@ -724,6 +770,32 @@
                 addMarkerToMap(report);
             });
         }
+
+        // Função para mostrar mensagem de sucesso
+        function showSuccessMessage() {
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Função para mostrar mensagem de erro
+        function showErrorMessage() {
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
         
         // Seleção de tipo de problema
         document.querySelectorAll('.problem-type').forEach(type => {
@@ -746,40 +818,64 @@
             e.preventDefault();
             
             const type = document.getElementById('problemType').value;
-            const description = document.getElementById('problemDescription').value;
+            const description = document.getElementById('problemDescription').value.trim();
             const lat = document.getElementById('problemLat').value;
             const lng = document.getElementById('problemLng').value;
             
-            if (!type || !description || !lat || !lng) {
-                alert('Por favor, preencha todos os campos e selecione uma localização no mapa.');
+            // Validação dos campos
+            if (!type) {
+                alert('Por favor, selecione o tipo de problema.');
                 return;
             }
             
-            const newReport = {
-                id: Date.now(),
-                lat: parseFloat(lat),
-                lng: parseFloat(lng),
-                type: type,
-                description: description,
-                timestamp: new Date().toISOString(),
-                confirmations: 0
-            };
+            if (!description) {
+                alert('Por favor, descreva o problema encontrado.');
+                return;
+            }
             
-            reports.push(newReport);
-            saveReportsToStorage();
-            updateReportsDisplay();
+            if (!lat || !lng) {
+                alert('Por favor, selecione uma localização no mapa.');
+                return;
+            }
             
-            // Limpar formulário
-            this.reset();
-            document.querySelectorAll('.problem-type').forEach(t => t.classList.remove('selected'));
-            document.getElementById('problemLocation').value = '';
+            // Desabilitar botão para evitar múltiplos envios
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
             
-            // Mostrar mensagem de sucesso
-            const successMessage = document.getElementById('successMessage');
-            successMessage.style.display = 'block';
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 5000);
+            try {
+                const newReport = {
+                    id: Date.now(),
+                    lat: parseFloat(lat),
+                    lng: parseFloat(lng),
+                    type: type,
+                    description: description,
+                    timestamp: new Date().toISOString(),
+                    confirmations: 0
+                };
+                
+                reports.push(newReport);
+                
+                if (saveReportsToStorage()) {
+                    updateReportsDisplay();
+                    
+                    // Limpar formulário
+                    this.reset();
+                    document.querySelectorAll('.problem-type').forEach(t => t.classList.remove('selected'));
+                    document.getElementById('problemLocation').value = '';
+                    
+                    showSuccessMessage();
+                } else {
+                    throw new Error('Erro ao salvar no localStorage');
+                }
+            } catch (error) {
+                console.error('Erro ao enviar report:', error);
+                showErrorMessage();
+            } finally {
+                // Reabilitar botão
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar Report';
+            }
         });
         
         // Botão de localização
@@ -797,7 +893,7 @@
         
         // Botão de ajuda
         document.getElementById('helpBtn').addEventListener('click', function() {
-            alert('Como usar o CicloVias:\n\n1. Clique no mapa para selecionar a localização do problema\n2. Escolha o tipo de problema\n3. Descreva o problema encontrado\n4. Clique em "Enviar Report"\n\nSua contribuição ajuda a melhorar as ciclovias para todos!');
+            alert('Como usar o Via-Bike:\n\n1. Clique no mapa para selecionar a localização do problema\n2. Escolha o tipo de problema\n3. Descreva o problema encontrado\n4. Clique em "Enviar Report"\n\nSua contribuição ajuda a melhorar as vias para bicicletas para todos!');
         });
         
         // Inicialização
