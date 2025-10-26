@@ -485,7 +485,7 @@
                             Your message:
                             <textarea name="message"></textarea>
                         </label> -->
-                        <label for="problemDescription">Descrição *</label>
+                        <!-- <label for="problemDescription">Descrição *</label> -->
                         <label>
                          <textarea id="problemDescription" class="form-control" rows="3"
                             placeholder="Descreva o problema encontrado..." required></textarea>
@@ -496,14 +496,16 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="problemLocation">Localização *</label>
+                        <!-- <label for="problemLocation">Localização *</label> -->
                         <label>
                            <input type="text" id="problemLocation" class="form-control"
                               placeholder="Clique no mapa para selecionar a localização" readonly required>
-                           <input type="hidden" id="problemLat" name="problemLat">
-                           <input type="hidden" id="problemLng" name="problemLng">
-                           <div class="form-hint">Clique no mapa à esquerda para definir a localização</div>
                         </label>   
+
+                        <input type="hidden" id="problemLat" name="problemLat">
+                        <input type="hidden" id="problemLng" name="problemLng">
+                        <div class="form-hint">Clique no mapa à esquerda para definir a localização</div>
+                           
                     </div>
 
                     <button type="submit" class="btn" style="width: 100%;" id="submitBtn">Enviar Report</button>
