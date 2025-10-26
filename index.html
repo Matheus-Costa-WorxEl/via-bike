@@ -453,6 +453,7 @@
                 <form id="problemForm" action="https://formspree.io/f/mblpjylv" method="POST" >
                     <div class="form-group">
                         <label for="problemType">Tipo de Problema *</label>
+                        
                         <div class="problem-types">
                             <div class="problem-type" data-type="hole">
                                 <i>🕳️</i>
@@ -480,19 +481,29 @@
                     </div>
 
                     <div class="form-group">
+                        <!-- <label>
+                            Your message:
+                            <textarea name="message"></textarea>
+                        </label> -->
                         <label for="problemDescription">Descrição *</label>
-                        <textarea id="problemDescription" class="form-control" rows="3"
+                        <label>
+                         <textarea id="problemDescription" class="form-control" rows="3"
                             placeholder="Descreva o problema encontrado..." required></textarea>
+                        </label>    
+
                         <div class="form-hint">Forneça detalhes sobre o problema</div>
+
                     </div>
 
                     <div class="form-group">
                         <label for="problemLocation">Localização *</label>
-                        <input type="text" id="problemLocation" class="form-control"
-                            placeholder="Clique no mapa para selecionar a localização" readonly required>
-                        <input type="hidden" id="problemLat" name="problemLat">
-                        <input type="hidden" id="problemLng" name="problemLng">
-                        <div class="form-hint">Clique no mapa à esquerda para definir a localização</div>
+                        <label>
+                           <input type="text" id="problemLocation" class="form-control"
+                              placeholder="Clique no mapa para selecionar a localização" readonly required>
+                           <input type="hidden" id="problemLat" name="problemLat">
+                           <input type="hidden" id="problemLng" name="problemLng">
+                           <div class="form-hint">Clique no mapa à esquerda para definir a localização</div>
+                        </label>   
                     </div>
 
                     <button type="submit" class="btn" style="width: 100%;" id="submitBtn">Enviar Report</button>
